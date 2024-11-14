@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::get('/', function () {
-    return response()->json(['message' => 'Peler!']);
+    return response()->json(['message' => 'Ok!']);
 });
 
 Route::group(['prefix' => env('API_PREFIX')], function () {
@@ -49,7 +49,6 @@ Route::group(['prefix' => env('API_PREFIX')], function () {
     Route::get('/reservation/user/{id}', [ReservationController::class, 'getReservationByUserId']);
     Route::post('/reservation', [ReservationController::class, 'createReservation']);
     Route::delete('/reservation/{id}', [ReservationController::class, 'deleteReservation']);
-    Route::get('/reservation/filter/advance-filter', [ReservationController::class, 'advanceFilter']);
 });
 
 Route::group(['prefix' => env('API_PREFIX')], function () {

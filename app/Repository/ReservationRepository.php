@@ -14,6 +14,4 @@ interface ReservationRepository
     public function createReservation($request);
 
     public function deleteReservation($id);
-
-    public function advancedFilter($filters);
 }

@@ -74,6 +74,7 @@ class AuthRepositoryImpl implements AuthRepository
             $payloads = [
                 'access_token' => $token,
                 'expires_in' => auth()->factory()->getTTL() * 60,
+                'token_type' => 'bearer',
                 'user' => $user,
             ];
 

@@ -52,9 +52,4 @@ class ReservationController extends Controller
     {
         return $this->reservationRepository->deleteReservation($id);
     }
-
-    public function advanceFilter(Request $request)
-    {
-        return $this->reservationRepository->advancedFilter($request);
-    }
 }
