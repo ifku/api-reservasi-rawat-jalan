@@ -91,9 +91,35 @@ class DoctorRepositoryImpl implements DoctorRepository
             $doctor = Doctor::find($id);
             $doctor->delete();
             return response_json(true, $doctor, 'Doctor deleted', 200);
-
         } catch (\Exception $error) {
             return response_json(false, null, 'Failed to delete data', 500);
+        }
+    }
+
+    public function getAvailableDoctorsByClinicAndDate($clinicId, $date)
+    {
+        try {
+            $dayOfWeek = date('l', strtotime($date));
+
+            $doctors = DB::table('tb_doctor')
+                ->join('tb_schedule', 'tb_doctor.id_doctor', '=', 'tb_schedule.doctor_id')
+                ->where('tb_doctor.clinic_id', $clinicId)
+                ->where('tb_schedule.days', $dayOfWeek)
+                ->select('tb_doctor.*', 'tb_schedule.start_time', 'tb_schedule.end_time')
+                ->get();
+
+            $availableDoctors = $doctors->filter(function ($doctor) use ($date) {
+                $isReserved = DB::table('tb_reservation')
+                    ->where('doctor_id', $doctor->id_doctor)
+                    ->where('reservation_date', $date)
+                    ->exists();
+
+                return !$isReserved;
+            });
+
+            return response_json(true, $availableDoctors, 'Available doctors fetched successfully', 200);
+        } catch (\Exception $e) {
+            return response_json(false, null, 'Failed to fetch available doctors', 500);
         }
     }
 }

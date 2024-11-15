@@ -6,6 +6,7 @@ use App\Repository\DoctorRepository;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Validator;
 
 class DoctorController extends Controller
 {
@@ -21,11 +22,15 @@ class DoctorController extends Controller
         return $this->doctorRepository->getAllDoctor();
     }
 
-    public function getDoctorById(Request $request, $id): JsonResponse
+    public function getDoctorById($id): JsonResponse
     {
-        $request->validate([
-            'id' => 'required|uuid|exists:tb_doctor,id_doctor'
-        ]);
+        $validator = Validator::make(
+            ['id' => $id],
+            ['id' => 'required|uuid|exists:tb_doctor,id_doctor']
+        );
+        if ($validator->fails()) {
+            return response_json(false, [], $validator->errors()->first(), 400);
+        }
         return $this->doctorRepository->getDoctorById($id);
     }
 
@@ -46,14 +51,33 @@ class DoctorController extends Controller
 
     public function getAllDoctorByClinicId($id): JsonResponse
     {
+        $validator = Validator::make(
+            ['id' => $id],
+            ['id' => 'required|uuid|exists:tb_clinic,id_clinic']
+        );
+        if ($validator->fails()) {
+            return response_json(false, [], $validator->errors()->first(), 400);
+        }
         return $this->doctorRepository->getAllDoctorByClinicId($id);
     }
 
-    public function deleteDoctor(Request $request, $id): JsonResponse
+    public function deleteDoctor($id): JsonResponse
     {
-        $request->validate([
-            'id' => 'required|uuid|exists:tb_doctor,id_doctor'
-        ]);
+        $validator = Validator::make(
+            ['id' => $id],
+            ['id' => 'required|uuid|exists:tb_doctor,id_doctor']
+        );
+        if ($validator->fails()) {
+            return response_json(false, [], $validator->errors()->first(), 400);
+        }
         return $this->doctorRepository->deleteDoctor($id);
+    }
+
+    public function getAvailableDoctorsByClinicAndDate(Request $request): JsonResponse
+    {
+        $clinicId = $request->input('clinic_id');
+        $date = $request->input('date');
+
+        return $this->doctorRepository->getAvailableDoctorsByClinicAndDate($clinicId, $date);
     }
 }

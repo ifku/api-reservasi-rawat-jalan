@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('tb_reservation', function (Blueprint $table) {
             $table->string('id_reservation')->primary()->unique()->index();
             $table->enum('reservation_status', ['Pending', 'Done', 'Canceled'])->default('Pending');
-            $table->enum('reservation_insurance_type', ['BPJS', 'Insurance', 'Personal'])->default('Personal');
+            $table->enum('reservation_insurance_type', ['Insurance', 'Personal'])->default('Personal');
             $table->dateTime('reservation_date');
             $table->uuid('patient_id');
             $table->uuid('doctor_id');

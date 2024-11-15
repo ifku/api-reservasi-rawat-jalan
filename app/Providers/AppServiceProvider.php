@@ -18,6 +18,7 @@ use App\RepositoryImpl\QueueRepositoryImpl;
 use App\RepositoryImpl\ReservationRepositoryImpl;
 use App\RepositoryImpl\ScheduleRepositoryImpl;
 use App\RepositoryImpl\UserRepositoryImpl;
+use App\Services\FirebaseService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -27,6 +28,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->singleton(FirebaseService::class, function ($app) {
+            return new FirebaseService();
+        });
         $this->app->bind(AuthRepository::class, AuthRepositoryImpl::class);
         $this->app->bind(ClinicRepository::class, ClinicRepositoryImpl::class);
         $this->app->bind(DoctorRepository::class, DoctorRepositoryImpl::class);

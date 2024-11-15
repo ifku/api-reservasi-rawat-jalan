@@ -1,8 +1,10 @@
 <?php
+
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ClinicController;
 use App\Http\Controllers\DoctorController;
+use App\Http\Controllers\FirebaseController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\QueueController;
 use App\Http\Controllers\ScheduleController;
@@ -38,6 +40,7 @@ Route::group(['prefix' => env('API_PREFIX')], function () {
 Route::group(['prefix' => env('API_PREFIX')], function () {
     Route::get('/doctor', [DoctorController::class, 'getAllDoctor']);
     Route::get('/doctor/clinic/{id}', [DoctorController::class, 'getAllDoctorByClinicId']);
+    Route::get('/doctor/available-doctors', [DoctorController::class, 'getAvailableDoctorsByClinicAndDate']);
     Route::get('/doctor/{id}', [DoctorController::class, 'getDoctorById']);
     Route::post('/doctor', [DoctorController::class, 'createDoctor']);
 });
@@ -69,3 +72,4 @@ Route::group(['prefix' => env('API_PREFIX')], function () {
     Route::post('/patient', [PatientController::class, 'createPatient']);
     Route::get('/patient/{id}', [PatientController::class, 'getPatientByUserId']);
 });
+

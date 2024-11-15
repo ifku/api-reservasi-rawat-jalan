@@ -19,7 +19,6 @@ return new class extends Migration {
             $table->double('doctor_rating');
             $table->string('doctor_image')->nullable();
             $table->uuid('clinic_id');
-            $table->boolean('is_available')->default(true);
             $table->timestamps();
 
             $table->foreign('clinic_id')->references('id_clinic')->on('tb_clinic');
