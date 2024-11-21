@@ -15,15 +15,21 @@ class Queue extends Model
     protected $fillable = [
         'id_queue',
         'queue_number',
-        'doctor_id'
+        'doctor_id',
+        'reservation_id'
     ];
 
     protected $hidden = [
-      'doctor_id'
+        'reservation_id'
     ];
 
-    public function doctor(): HasOne
+    public function doctor(): BelongsTo
     {
-        return $this->hasOne(Doctor::class, 'id_doctor', 'doctor_id');
+        return $this->belongsTo(Doctor::class, 'doctor_id', 'id_doctor');
+    }
+
+    public function reservation(): BelongsTo
+    {
+        return $this->belongsTo(Reservation::class, 'reservation_id', 'id_reservation');
     }
 }

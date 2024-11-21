@@ -60,6 +60,23 @@ class FirebaseService
     {
         return $this->makeRequest('PATCH', "{$collection}/{$documentId}", $data);
     }
+    
+    public function updateOrCreateDocument(string $collection, string $documentId, array $data)
+{
+    try {
+        // Attempt to update the document
+        return $this->updateDocument($collection, $documentId, $data);
+    } catch (\Exception $e) {
+        // If the document does not exist, create it
+        if (str_contains($e->getMessage(), 'NOT_FOUND')) {
+            return $this->makeRequest('POST', "{$collection}?documentId={$documentId}", $data);
+        }
+
+        // Re-throw other exceptions
+        throw $e;
+    }
+}
+
 
     public function deleteDocument(string $collection, string $documentId)
     {

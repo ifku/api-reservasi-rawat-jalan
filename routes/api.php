@@ -56,7 +56,6 @@ Route::group(['prefix' => env('API_PREFIX')], function () {
 
 Route::group(['prefix' => env('API_PREFIX')], function () {
     Route::get('/queue/{id}', [QueueController::class, 'getQueueByDoctorId']);
-    Route::post('/queue', [QueueController::class, 'createQueue']);
     Route::put('/queue/{id}', [QueueController::class, 'updateQueue']);
     Route::delete('/queue/{id}', [QueueController::class, 'resetQueue']);
 });

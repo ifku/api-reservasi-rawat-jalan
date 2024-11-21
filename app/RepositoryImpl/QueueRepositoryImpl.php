@@ -20,24 +20,6 @@ class QueueRepositoryImpl implements QueueRepository
         }
     }
 
-    public function createQueue($request): JsonResponse
-    {
-        try {
-            $queue = new Queue();
-            $queue->id_queue = Uuid::uuid4();
-            $queue->queue_number = 1;
-            $queue->doctor_id = $request->doctor_id;
-
-            DB::beginTransaction();
-            $queue->save();
-            DB::commit();
-            return response_json(true, $queue, 'Queue created successfully', 201);
-        } catch (\Exception $error) {
-            DB::rollBack();
-            return response_json(false, null, "Failed to create queue", 500);
-        }
-    }
-
     public function updateQueue($id): JsonResponse
     {
         try {

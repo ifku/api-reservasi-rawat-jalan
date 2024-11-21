@@ -16,16 +16,44 @@ class DoctorRepositoryImpl implements DoctorRepository
     public function getAllDoctor(): JsonResponse
     {
         try {
-            $doctors = Doctor::all();
-            $doctors = $doctors->map(function ($doctor) {
+
+            $doctors = Doctor::with('clinic')->paginate(10);
+
+
+            $transformedDoctors = collect($doctors->items())->map(function ($doctor) {
                 $doctor->doctor_image = URL::to("/storage/doctor_images/{$doctor->doctor_image}");
-                return $doctor;
+
+                return [
+                    'id_doctor' => $doctor->id_doctor,
+                    'doctor_name' => $doctor->doctor_name,
+                    'doctor_sip' => $doctor->doctor_sip,
+                    'doctor_str' => $doctor->doctor_str,
+                    'doctor_age' => $doctor->doctor_age,
+                    'doctor_rating' => $doctor->doctor_rating,
+                    'doctor_image' => $doctor->doctor_image,
+                    'clinic_id' => $doctor->clinic_id,
+                    'clinic_name' => $doctor->clinic->clinic_name ?? null,
+                    'created_at' => $doctor->created_at,
+                    'updated_at' => $doctor->updated_at,
+                ];
             });
-            return response_json(true, $doctors, 'Get all doctor success', 200);
+
+
+            $pagination = [
+                'total' => $doctors->total(),
+                'currentPage' => $doctors->currentPage(),
+                'totalPage' => $doctors->lastPage(),
+                'hasNext' => $doctors->hasMorePages(),
+                'hasPrev' => $doctors->currentPage() > 1,
+            ];
+
+            return response_json(true, $transformedDoctors->toArray(), 'Get all doctor success', 200, $pagination);
         } catch (\Exception $error) {
             return response_json(false, null, 'Failed to fetch data', 500);
         }
     }
+
+
 
     public function getDoctorById($id): JsonResponse
     {
@@ -105,7 +133,20 @@ class DoctorRepositoryImpl implements DoctorRepository
                 ->join('tb_schedule', 'tb_doctor.id_doctor', '=', 'tb_schedule.doctor_id')
                 ->where('tb_doctor.clinic_id', $clinicId)
                 ->where('tb_schedule.days', $dayOfWeek)
-                ->select('tb_doctor.*', 'tb_schedule.start_time', 'tb_schedule.end_time')
+                ->select(
+                    'tb_doctor.id_doctor',
+                    'tb_doctor.doctor_name',
+                    'tb_doctor.doctor_sip',
+                    'tb_doctor.doctor_str',
+                    'tb_doctor.doctor_age',
+                    'tb_doctor.doctor_rating',
+                    'tb_doctor.doctor_image',
+                    'tb_doctor.clinic_id',
+                    'tb_schedule.start_time',
+                    'tb_schedule.end_time',
+                    'tb_doctor.created_at',
+                    'tb_doctor.updated_at'
+                )
                 ->get();
 
             $availableDoctors = $doctors->filter(function ($doctor) use ($date) {
@@ -117,7 +158,23 @@ class DoctorRepositoryImpl implements DoctorRepository
                 return !$isReserved;
             });
 
-            return response_json(true, $availableDoctors, 'Available doctors fetched successfully', 200);
+            $formattedDoctors = $availableDoctors->map(function ($doctor) {
+                return [
+                    'id_doctor' => $doctor->id_doctor,
+                    'doctor_name' => $doctor->doctor_name,
+                    'doctor_sip' => $doctor->doctor_sip,
+                    'doctor_str' => $doctor->doctor_str,
+                    'doctor_age' => (int) $doctor->doctor_age,
+                    'doctor_rating' => $doctor->doctor_rating,
+                    'doctor_image' => Url::to("/storage/doctor_images/{$doctor->doctor_image}"),
+                    'clinic_id' => $doctor->clinic_id,
+                    'clinic_name' => $doctor->clinic_name ?? 'Default Clinic',
+                    'created_at' => $doctor->created_at,
+                    'updated_at' => $doctor->updated_at,
+                ];
+            });
+
+            return response_json(true, $formattedDoctors, 'Available doctors fetched successfully', 200);
         } catch (\Exception $e) {
             return response_json(false, null, 'Failed to fetch available doctors', 500);
         }

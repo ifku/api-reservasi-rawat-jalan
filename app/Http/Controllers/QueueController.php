@@ -25,22 +25,6 @@ class QueueController extends Controller
         return $this->queueRepository->getQueueByDoctorId($id);
     }
 
-    public function createQueue(Request $request): JsonResponse
-    {
-        $request->validate([
-            'doctor_id' => 'required|uuid'
-        ]);
-        try {
-            $queue = $this->queueRepository->createQueue($request);
-            if (!$queue) {
-                return response_json(false, null, 'Failed to create queue', 500);
-            }
-            return response_json(true, $queue, 'Queue has been created', 201);
-        } catch (\Exception $error) {
-            return response_json(false, $error, 'Failed to create queue', 500);
-        }
-    }
-
     public function updateQueue($id): JsonResponse
     {
         try {

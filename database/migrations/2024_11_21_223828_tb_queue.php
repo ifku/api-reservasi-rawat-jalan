@@ -12,11 +12,13 @@ return new class extends Migration {
     {
         Schema::create('tb_queue', function (Blueprint $table) {
             $table->uuid('id_queue')->primary()->unique()->index();
-            $table->integer('queue_number')->unique();
+            $table->integer('queue_number');
             $table->uuid('doctor_id');
+            $table->string('reservation_id');
             $table->timestamps();
 
             $table->foreign('doctor_id')->references('id_doctor')->on('tb_doctor');
+            $table->foreign('reservation_id')->references('id_reservation')->on('tb_reservation');
         });
     }
 

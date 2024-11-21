@@ -44,4 +44,9 @@ class Doctor extends Model
     {
         return $this->hasMany(Reservation::class, 'doctor_id', 'id_doctor');
     }
+
+    public function queue(): HasMany
+    {
+        return $this->hasMany(Queue::class, 'doctor_id', 'id_doctor');
+    }
 }
